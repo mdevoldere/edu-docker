@@ -1,0 +1,12 @@
+version: '2'
+services:
+  pages:
+    build: .
+    image: mdevoldere/jekyll
+    container_name: devolderefr
+    ports:
+      - 4000:4000
+      - 35729:35729
+    volumes:
+      - .:/srv/jekyll
+    command: jekyll serve --force_polling --host 0.0.0.0 --incremental --livereload
