@@ -1,6 +1,6 @@
 FROM jekyll/jekyll:3
 
-COPY Gemfile /srv/jekyll/
+# COPY Gemfile /srv/jekyll/
 
 WORKDIR /srv/jekyll
 
@@ -11,6 +11,6 @@ RUN gem install jekyll
 RUN gem install bundler -v 2.4.22
 RUN gem update --system 3.2.3 
 
-RUN bundle install
+# RUN bundle install
 
 EXPOSE 4000 35729
