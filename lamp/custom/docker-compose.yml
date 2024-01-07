@@ -1,9 +1,9 @@
 version: '3.7'
-
+name: mdevoldere-lamp-custom
 services: 
   db:
     image: mariadb:11
-    container_name: db_lamp
+    container_name: mdevoldere-lamp-custom-db
     restart: always
     volumes:
       - db_data:/var/lib/mysql
@@ -16,8 +16,9 @@ services:
       MYSQL_ROOT_PASSWORD: root
 
   web:
-    image: "php:8.2-apache"
-    container_name: apache2
+    build: .
+    image: mdevoldere/php-apache-custom
+    container_name: mdevoldere-lamp-custom-apache2
     restart: always
     depends_on: ['db']
     ports: ['80:80']
@@ -32,7 +33,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.2
-    container_name: phpmyadmin
+    container_name: mdevoldere-lamp-custom-phpmyadmin
     restart: always
     depends_on: ['db']
     ports: ['1200:80']
@@ -41,7 +42,6 @@ services:
       - MYSQL_DB_HOST=db
       - MYSQL_USER=user 
       - MYSQL_PASSWORD=user
-
 
 
 volumes:

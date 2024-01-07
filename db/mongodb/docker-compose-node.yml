@@ -1,0 +1,31 @@
+version: '3.8'
+name: mdevoldere-mongodb-node
+volumes:
+  mongodb_data:
+services:
+  node-app:
+    build: .
+    image: node-app
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+    ports:
+      - '8085:8085'
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/src
+    networks:
+      - node-network
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge

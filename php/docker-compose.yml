@@ -1,0 +1,50 @@
+version: '3.7'
+name: mdevoldere-php-apache
+services: 
+  db:
+    image: mariadb:11
+    container_name: mdevoldere-sql-mariadb
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backups:/backups
+    environment:
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: username 
+      MYSQL_PASSWORD: userpassword
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+      MYSQL_ROOT_PASSWORD: root
+
+  web:
+    build: .
+    image: mdevoldere/php-apache
+    container_name: mdevoldere-php-apache2
+    restart: always
+    depends_on: ['db']
+    ports: ['80:80']
+    links: ['db:db']
+    volumes:
+      - './www:/var/www/html'
+    #  - './vendor:/var/www/vendor'
+    environment:
+      MYSQL_DB_HOST: mydatabase
+      MYSQL_DATABASE: mdapi
+      MYSQL_USER: username 
+      MYSQL_PASSWORD: userpassword
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
+    container_name: mdevoldere-phpmyadmin
+    restart: always
+    depends_on: ['db']
+    ports: ['1200:80']
+    links: ['db:db']
+    environment:
+      - MYSQL_DB_HOST=db
+      - MYSQL_USER=username 
+      - MYSQL_PASSWORD=userpassword
+
+
+
+volumes:
+  db_data: {}

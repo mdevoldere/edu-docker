@@ -1,12 +1,13 @@
 version: '2'
+name: myproject
 services:
   pages:
     build: .
     image: mdevoldere/jekyll
-    container_name: devolderefr
+    container_name: mycontainername
     ports:
-      - 4000:4000
-      - 35729:35729
+      - 4000:4000 # localhost port
+      - 35729:35729 # debug port
     volumes:
       - .:/srv/jekyll
     command: jekyll serve --force_polling --host 0.0.0.0 --incremental --livereload

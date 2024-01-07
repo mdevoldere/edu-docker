@@ -1,0 +1,28 @@
+version: '3.9'
+name: mdevoldere-postgres-standalone
+volumes:
+  db_data:
+  pg_admin_data:
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./dev/myprojectdata:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=rootpassword
+      - POSTGRES_USER=username
+      - POSTGRES_DB=password
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
