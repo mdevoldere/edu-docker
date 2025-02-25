@@ -11,7 +11,7 @@ COPY . .
 # RUN rm ./*.sln # supprimer les fichiers SLN car il sont trop Trout 
 
 # Restaurer les packages Nuget
-RUN dotnet restore 
+RUN dotnet restore "ApiCountries.csproj"
 
 # Compiler le projet en mode Release (sans les symboles de Debogage) dans le répertoire /app/published
 RUN dotnet publish ApiCountries.csproj -c Release -o published

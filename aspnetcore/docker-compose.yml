@@ -1,0 +1,41 @@
+name: my_web_api
+
+networks:
+    my_app_network:
+      driver: bridge
+       
+volumes:
+  my_volume:
+
+services:
+    sqlserver:
+        container_name: sqlserver
+        hostname: sqlserver
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+            - 1443:1433
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_SA_PASSWORD=MyPassword1234 
+        env_file: .sqlserver.env
+        volumes:
+            - my_volume:/var/opt/mssql
+        healthcheck:
+        # Test if the SQL server is available without using any credentials. 
+        test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "http://localhost:1433", "-U", "sa", "-P", "MyPassword1234", "-Q", "SELECT 1", "||", "exit 1"]
+        interval: 10s
+        retries: 5
+        start_period: 30s
+        timeout: 10s
+    webapi:
+        container_name: webapi
+        hostname: webapi
+        # image: ${DOCKER_REGISTRY-}webapisqlserverdockerdemo
+        ports:
+            - 4500:8080 
+        build:
+          context: .
+          dockerfile: ./Dockerfile
+        depends_on: 
+        sqlserver:
+            condition: service_healthy #service_completed_successfully
