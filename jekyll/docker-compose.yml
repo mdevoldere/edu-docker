@@ -10,4 +10,4 @@ services:
       - 35729:35729 # debug port
     volumes:
       - .:/srv/jekyll
-    command: jekyll serve --force_polling --host 0.0.0.0 --incremental --livereload
+    command: jekyll serve --force_polling --livereload
