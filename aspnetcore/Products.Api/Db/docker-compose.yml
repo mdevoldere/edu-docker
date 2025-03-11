@@ -1,4 +1,4 @@
-name: app-products-database
+name: app-products-webapi
 
 volumes:
   mssql-data:

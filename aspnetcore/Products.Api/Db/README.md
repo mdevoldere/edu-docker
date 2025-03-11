@@ -9,7 +9,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyPassword1234" -p 1433:1433
 Docker-compose équivalent :
 
 ```yml
-name: app-products-database
+name: app-products-webapi
 
 volumes:
   mssql-data:

@@ -161,6 +161,8 @@ builder.Services.AddDbContext<ProductsDbContext>(options => options.UseSqlServer
 
 ## Appliquer les migrations au 1er lancement de l'application
 
+Préparer les migrations pour la base de données. On peut les appliquer en local mais on prendra soin de ne pas supprimer les fichiers de migration. Ainsi, dans le conteneur, au 1er démarrage de l'application, les migrations seront appliquées automatiquement. Pour cela :  
+
 Dans le fichier Program.cs
 
 Après la ligne 
@@ -177,9 +179,13 @@ using (var scope = app.Services.CreateScope())
 }
 ```
 
-## Laisser Swagger Disponible en production
+## Laisser Swagger actif en production
 
-Après le code précédent, Modifier la condition `if (app.Environment.IsDevelopment())`: 
+Par défaut, swagger n'est activé qu'en mode Developpement. 
+
+Si l'on souhaite le garder actif dans le conteneur ; 
+
+Après le code précédent, désactiver la condition `if (app.Environment.IsDevelopment())` et implémenter le code suivant : 
 
 ```csharp
 // Configure the HTTP request pipeline.
@@ -200,4 +206,112 @@ var rewriteOptions = new RewriteOptions()
     .AddRedirect("swagger/index.html", "/index.html", 301)
     .AddRedirect("swagger", "/index.html", 301);
 app.UseRewriter(rewriteOptions);
-`` 
+```
+
+## Créer le(s) contrôleur(s)
+
+Une fois le DbContext et les modèles créées, on peut générer les contrôleurs.
+
+## Tester l'application
+
+Lancer l'application dans VisualStudio et vérifier :
+- le bon fonctionnement de l'API (tester les 5 méthodes).
+- que les tables sont bien créées dans la base de données locale de Visual Studio.
+- que les tables sont bien alimentées avec le jeu d'essai (le cas échéant).
+
+Si tout fonctionne bien, tout est prêt pour "conteneuriser" l'application et la base de données.
+
+# Ô Conteneur
+
+## Créer le Dockerfile pour l'application
+
+```Dockerfile
+# Customisation: https://aka.ms/customizecontainer 
+
+# Cet index est utilisé lors de l’exécution à partir de VS en mode rapide (par défaut pour la configuration de débogage)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+EXPOSE 8080
+
+# Cette phase est utilisée pour générer le projet
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Products.Api.csproj", "."]
+RUN dotnet restore "./Products.Api.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "./Products.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Cette étape permet de publier le projet de service à copier dans la phase finale
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Products.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# Cette phase est utilisée en production ou lors de l’exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n’est pas utilisée)
+FROM base AS final
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_ENVIRONMENT=Production
+
+WORKDIR /app
+COPY --from=publish /app/publish . 
+
+ENTRYPOINT ["dotnet", "Products.Api.dll", "--environment=Production"]
+```
+
+Et le docker-compose associé : 
+
+```yml
+name: app-products-webapi
+
+networks:
+  app-products-network:
+    driver: bridge
+
+services:
+  products_api:
+    container_name: products_api
+    hostname: products_api
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+        - app-products-network
+    ports: 
+      - 4500:8080
+
+```
+
+Ainsi que le docker-compose pour la base de données : 
+
+```yml
+name: app-products-webapi
+
+volumes:
+  mssql-data:
+
+networks:
+  app-products-network:
+    driver: bridge
+
+services:
+  products_sqlserver:
+    container_name: products_sqlserver
+    hostname: products_sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - app-products-network
+    ports:
+      - 1433:1433
+    volumes:
+      - mssql-data:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=MyPassword1234
+    # env_file: sqlserver.env
+```
+
+
+On prendra soin de configurer le même nom de réseau pour les 2 conteneurs afin qu'ils puissent communiquer :)
