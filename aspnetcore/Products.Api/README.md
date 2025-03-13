@@ -30,17 +30,18 @@ Une fois que l'application fonctionne en local :
 
 ## Créer le projet
 
-Dans Visual Studio créer un projet de tpye "API Web"
+Dans Visual Studio créer un projet de type "API Web"
 
 ## Installer les Packages Nuget 
 
 Installer les Packages EntityFramework :
-    - Microsoft.EntityFrameworkCore
-    - Microsoft.EntityFrameworkCore.Design
-    - Microsoft.EntityFrameworkCore.Tools
-    - Microsoft.EntityFrameworkCore.Sqlserver
 
-En utilisant le gestionnaire de packages Nuget de Visual Studio
+- Microsoft.EntityFrameworkCore
+- Microsoft.EntityFrameworkCore.Design
+- Microsoft.EntityFrameworkCore.Tools
+- Microsoft.EntityFrameworkCore.Sqlserver
+
+En utilisant le gestionnaire de packages Nuget de Visual Studio.
 
 ## Créer les modèles
 
@@ -100,7 +101,7 @@ namespace Products.Api.Db
 
 ## Alimenter la base de données avec un jeu d'essai 
 
-La collection de produits créés est appelée par la méthode **OnModelCreating** du **Dbcontext** ci-dessus.
+La collection de produits à insérer dans la base de données est appelée par la méthode **OnModelCreating** du **Dbcontext** ci-dessus.
 
 ```csharp
 // Db/ProductsDataSeed
