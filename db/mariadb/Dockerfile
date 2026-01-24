@@ -1,5 +1,5 @@
 # Pull the mariadb latest image
-FROM mariadb:11
+FROM mariadb:11.8.5
 # List all the packages that we want to install
 ENV PACKAGES openssh-server openssh-client
 # Install Packages

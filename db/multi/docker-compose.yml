@@ -1,0 +1,52 @@
+name: mdevoldere-db
+services:
+  db_mariadb:
+    image: mariadb:11.8.5
+    container_name: mdevoldere-db-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      # - db_data:/var/lib/mysql
+      - ./data/mariadb:/var/lib/mysql
+      - ./sql/mariadb:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+  db_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
+    container_name: mdevoldere-db-phpmyadmin
+    restart: unless-stopped
+    depends_on: ['db_mariadb']
+    ports: ['1200:80']
+    links: ['db_mariadb:db']
+    environment:
+      - MYSQL_DB_HOST=db_mariadb
+      - MYSQL_USER=user 
+      - MYSQL_PASSWORD=secret
+  db_postgres:
+    image: postgres:14-alpine
+    container_name: mdevoldere-db-postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./sql/postgres:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=rootpassword
+      - POSTGRES_USER=username
+      - POSTGRES_DB=password
+  db_pgadmin:
+    image: dpage/pgadmin4
+    container_name: mdevoldere-db-pgadmin
+    restart: always
+    depends_on: ['db_postgres']
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin

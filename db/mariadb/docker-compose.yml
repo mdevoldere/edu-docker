@@ -1,15 +1,16 @@
-version: '3'
 name: mdevoldere-mariadb-standalone
 volumes:
   db_data:
 services:
   db:
-    image: mariadb
+    image: mariadb:11.8.5
+    container_name: db-mysql
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mydatabase
       MYSQL_USER: user
       MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - db_data:/var/lib/mysql
       - ./dev/myprojectdata:/docker-entrypoint-initdb.d

@@ -1,0 +1,117 @@
+# Créer un projet d'API Rest avec Symfony 
+
+## Étapes 
+- Créer le container Docker
+    - Serveur Web avec PHP et certains outils préinstallés
+    - Base de données
+    - PhpMyAdmin
+- Installer Symfony dans le container
+- Configurer la base de données
+- Tester l'installation
+- Installer les dépendances nécessaires à un projet de type API Rest
+- Configurer l'API
+- Créer les entités
+- Tester l'API
+
+## Préparation
+
+1. En local, créer un répertoire **vide**
+2. Dans ce répertoire, copier les fichiers :
+    - Structure de fichiers attendue : 
+        - VotreRepertoire/
+            - conf/
+                - 000-default.conf
+                - apache.dockerfile
+                - symfony.install.sh
+                - symfony.env
+            - docker-compose.yml
+3. Dans un terminal Se positionner dans le répertoire
+4. Exécuter la commande `docker compose up`
+
+Après avoir exécuté la commande `docker compose up`, le container est créé et lancé.
+
+1. Accéder au terminal du container "web"
+
+## Méthode 1 : le script bash
+
+Dans le container, exécuter le script `/var/www/symfony.install.sh`
+
+## Méthode 2 : installation manuelle 
+
+Dans le container :
+
+1. Se positionner sur le chemin '/var/www/html'
+    - Bien vérifier qu'il est vide (le vider si nécessaire)
+2. Lancer l'installation de Symfony
+    - `composer create-project symfony/skeleton:"8.0.*" .`
+    - (Pensez à bien mettre le . à la fin de la commande (. = répertoire courant))
+3. Ouvrir le fichier `./src/.env` ou directement dans le container `/var/www/html/.env`
+
+Commenter la ligne `DATABASE_URL="postgre.....
+
+et ajouter en dessous la ligne suivante : 
+
+`DATABASE_URL="mysql://user:secret@db:3306/db_test?serverVersion=11.8.5-MariaDB&charset=utf8mb4"`
+
+Direction le terminal du conteneur Web :
+
+```bash
+cd /var/www/html
+php bin/console doctrine:database:create
+```
+
+La base de données est créée.
+
+# Tester l'installation
+
+L'installation de Symfony est terminée
+
+- Accéder à l'url http://127.0.0.1:8000
+- Vous devriez voir la page par défaut de Symfony.
+
+# Installation des dépendances Symfony
+
+```sh
+composer require symfony/maker-bundle --dev
+composer require api 
+``` 
+
+Cette commande va installer les dépendances nécessaires pour un projet d'API Rest.
+
+Le projet étant destiné à n'accueillir qu'une API, nous allons le configurer pour que l'adresse de base [http://localhost:8000/](http://localhost:8000/) pointe directement sur l'API.
+
+Ouvrir le fichier `./src/config/routes/api_platform.yaml` ou directement dans le conteneur `./var/www/html/config/routes/api_platform.yaml`.
+
+Puis commenter la ligne `prefix: /api` en la prefixant avec un hashtag comme ceci : `# prefix: /api`.
+
+Accéder à l'url [http://localhost:8000/](http://localhost:8000/) qui devrait afficher Swagger UI.
+
+
+# Créer la 1ère entité.
+
+```bash
+cd /var/www/html
+php bin/console make:entity
+# Suivre les instructions...
+```
+
+# Sauvegarder les changements
+
+```bash
+cd /var/www/html
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+## Autres commandes de migrations : 
+
+```bash
+# Afficher la version de la migration en cours
+php bin/console doctrine:migrations:current   
+# Afficher la version de la dernière migration  
+php bin/console doctrine:migrations:latest   
+# Afficher la liste de toutes les migrations et leurs statuts  
+php bin/console doctrine:migrations:list     
+# Afficher des informations sur l'état actuel des migrations et autres   
+php bin/console doctrine:migrations:status      
+```
