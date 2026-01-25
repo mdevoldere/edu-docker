@@ -29,6 +29,7 @@ COPY conf/apache.vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY conf/symfony.install.sh /var/www/symfony.install.sh
 COPY conf/symfony.env /var/www/symfony.env
 COPY conf/symfony.routes.api_platform.yaml /var/www/symfony.routes.api_platform.yaml
+COPY conf/symfony.packages.api_platform.yaml /var/www/symfony.packages.api_platform.yaml
 
 # Activation de modules Apache
 RUN a2enmod rewrite remoteip

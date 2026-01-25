@@ -12,10 +12,12 @@ if [ ! -f "composer.json" ]; then
     cd /var/www
     cp symfony.env html/.env
     cp symfony.routes.api_platform.yaml html/config/routes/api_platform.yaml
+    cp symfony.packages.api_platform.yaml html/config/packages/api_platform.yaml
+    sleep 2
     echo "Symfony config files set up."
-    echo "Clearing cache..."
-    php bin/console cache:clear
-    echo "Cache cleared."
+    # echo "Clearing cache..."
+    # php bin/console cache:clear
+    # echo "Cache cleared."
     echo "All done!"
 else
     echo "Symfony is already installed."
