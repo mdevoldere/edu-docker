@@ -1,0 +1,38 @@
+name: mdevoldere-php
+volumes:
+  php_mariadb: {}
+services: 
+  db:
+    image: mariadb:11.8.5
+    container_name: mdevoldere-sql-mariadb
+    restart: unless-stopped
+    volumes:
+      - php_mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: username 
+      MYSQL_PASSWORD: userpassword
+  web:
+    build: .
+    image: mdevoldere/php-apache
+    container_name: mdevoldere-php-apache2
+    restart: unless-stopped
+    depends_on: ['db']
+    ports: ['8006:80']
+    links: ['db:db']
+    volumes:
+      - './htdocs:/var/www/html'
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2
+    container_name: mdevoldere-php-phpmyadmin
+    restart: unless-stopped
+    depends_on: ['db']
+    ports: ['8007:80']
+    links: ['db:db']
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: db
+      PMA_USER: myuser
+      PMA_PASSWORD: monpassword

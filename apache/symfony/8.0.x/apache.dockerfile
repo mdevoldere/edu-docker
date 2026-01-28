@@ -23,6 +23,8 @@ RUN apt-get update -qq && \
 # Installation d'extensions PHP
 RUN docker-php-ext-install -j$(nproc) opcache pdo_mysql
 
+# Copie le fichier de configuration PHP
+COPY conf/php.ini /usr/local/etc/php/conf.d/php-mdevoldere.ini
 # Copie le fichier de configuration d'Apache
 COPY conf/apache.vhost.conf /etc/apache2/sites-available/000-default.conf
 # Copie les fichiers pour l'installation de Symfony
