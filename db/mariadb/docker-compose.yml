@@ -1,10 +1,10 @@
-name: mdevoldere-mariadb-standalone
+name: mdevoldere-mariadb
 volumes:
-  db_data:
+  db_mariadb:
 services:
   db:
     image: mariadb:11.8.5
-    container_name: db-mysql
+    container_name: mdevoldere-mariadb-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: mydatabase

@@ -11,7 +11,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
-      MYSQL_DATABASE: mydatabase
+      MYSQL_DATABASE: db_php
       MYSQL_USER: username 
       MYSQL_PASSWORD: userpassword
   web:
