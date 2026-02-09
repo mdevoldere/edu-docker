@@ -37,5 +37,5 @@ services:
           context: .
           dockerfile: ./Dockerfile
         depends_on: 
-        sqlserver:
-            condition: service_healthy #service_completed_successfully
+            sqlserver:
+                condition: service_healthy #service_completed_successfully

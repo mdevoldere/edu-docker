@@ -1,11 +1,10 @@
-version: "3.8"
 name: myvuejs
 services:
   vue:
     build: .
     ports:
       - 3000:3000
-    volumes: # (probably delete this too)
+    volumes: 
       - ./:/app
     env_file:
       - ./.env

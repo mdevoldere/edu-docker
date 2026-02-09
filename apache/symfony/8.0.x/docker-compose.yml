@@ -21,7 +21,7 @@ services:
     container_name: mdevoldere-symfony8-apache2
     build: 
       context: .
-      dockerfile: apache.dockerfile
+      dockerfile: symfony.dockerfile
     restart: unless-stopped
     depends_on: ['db']
     ports: ['8000:80']
